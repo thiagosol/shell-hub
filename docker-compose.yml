@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  shell-hub-api:
+    image: shell-hub
+    container_name: shell-hub-api
+    pull_policy: never
+    restart: unless-stopped
+    environment:
+      - SHELLHUB_MONGO_URI=${SHELLHUB_MONGO_URI}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.shellhub-api.entrypoints=http"
+      - "traefik.http.routers.shellhub-api.rule=Host(`api.shell.thiagosol.com`)"
+      - "traefik.http.routers.shellhub-api-secure.entrypoints=https"
+      - "traefik.http.routers.shellhub-api-secure.rule=Host(`api.shell.thiagosol.com`)"
+      - "traefik.http.routers.shellhub-api-secure.tls=true"
+      - "traefik.http.routers.shellhub-api-secure.service=shellhub-api-secure"
+      - "traefik.http.services.shellhub-api-secure.loadbalancer.server.port=8080"
+      - "traefik.docker.network=external-sol-apis"
+    networks:
+      - logging-network
+      - external-sol-apis
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://loki:3100/loki/api/v1/push"
+        loki-external-labels: "service=shell-hub-api,type=service"
+        loki-retries: "5"
+        loki-batch-size: "400"
+        mode: "non-blocking"
+    deploy:
+      resources:
+        limits:
+          memory: 100M
+
+  shell-hub-web:
+    image: shellhubio/frontend:latest
+    container_name: shell-hub-web
+    restart: unless-stopped
+    depends_on:
+      - shell-hub
+    environment:
+      - SHELLHUB_API_URL=https://api.shell.thiagosol.com
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.shellhub-web.entrypoints=http"
+      - "traefik.http.routers.shellhub-web.rule=Host(`shell.thiagosol.com`)"
+      - "traefik.http.routers.shellhub-web-secure.entrypoints=https"
+      - "traefik.http.routers.shellhub-web-secure.rule=Host(`shell.thiagosol.com`)"
+      - "traefik.http.routers.shellhub-web-secure.tls=true"
+      - "traefik.http.routers.shellhub-web-secure.service=shellhub-web-secure"
+      - "traefik.http.services.shellhub-web-secure.loadbalancer.server.port=80"
+      - "traefik.docker.network=external-sol-apis"
+    networks:
+      - logging-network
+      - external-sol-apis
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://loki:3100/loki/api/v1/push"
+        loki-external-labels: "service=shell-hub-web,type=service"
+        loki-retries: "5"
+        loki-batch-size: "400"
+        mode: "non-blocking"
+    deploy:
+      resources:
+        limits:
+          memory: 100M
+
+networks:
+  logging-network:
+    external: true
+  external-sol-apis:
+    external: true
