@@ -1,4 +1,4 @@
-FROM shellhubio/server:latest
+FROM shellhubio/shellhub:latest
 
 ARG SHELLHUB_MONGO_URI
 ARG ADMIN_USER
