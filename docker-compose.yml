@@ -40,8 +40,8 @@ services:
     container_name: wetty
     restart: unless-stopped
     environment:
-      - REMOTE_SSH_SERVER=${SHELL_SSH_SERVER}
-      - REMOTE_SSH_PORT=22
+      - SSHHOST=${SHELL_SSH_SERVER}
+      - SSHPORT=22
       - SSH_OPTIONS=-i /root/.ssh/deploy_key
     volumes:
       - /opt/auto-deploy/ssh/deploy_key:/root/.ssh/deploy_key:ro
