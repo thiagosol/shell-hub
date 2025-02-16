@@ -45,6 +45,7 @@ services:
       - SSH_OPTIONS=-i /root/.ssh/deploy_key
     volumes:
       - /opt/auto-deploy/ssh/deploy_key:/root/.ssh/deploy_key
+    command: ["sh", "-c", "chmod 600 /root/.ssh/deploy_key && eval $(ssh-agent) && ssh-add /root/.ssh/deploy_key && /entrypoint.sh"]
     networks:
       - wetty-network
       - logging-network  
