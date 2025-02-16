@@ -39,7 +39,7 @@ services:
     container_name: shell-hub-web
     restart: unless-stopped
     depends_on:
-      - shell-hub
+      - shell-hub-api
     environment:
       - SHELLHUB_API_URL=https://api.shell.thiagosol.com
     labels:
