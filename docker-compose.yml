@@ -42,7 +42,8 @@ services:
     environment:
       - SSHHOST=${SHELL_SSH_SERVER}
       - SSHPORT=22
-      - SSH_OPTIONS=-i /root/.ssh/deploy_key
+      - SSHAUTH=publickey
+      - SSHKEY=/root/.ssh/deploy_key
     volumes:
       - /opt/auto-deploy/ssh/deploy_key:/root/.ssh/deploy_key:ro
       - ./run.sh:/run.sh
